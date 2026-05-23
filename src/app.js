@@ -5,6 +5,7 @@
   const STORAGE_KEY = "clearpath-operational-reality-assessment-v1";
   const RESPONDENT_KEY = "clearpath-respondent-v1";
   const ENDPOINT_KEY = "clearpath-sheets-endpoint-v1";
+  const ASSESSMENT_ID_KEY = "clearpath-assessment-id-v1";
   const configuredEndpoint =
     (window.CLEARPATH_CONFIG && window.CLEARPATH_CONFIG.sheetsEndpoint) || "";
 
@@ -182,8 +183,20 @@
     };
   }
 
-  function createExportPayload(values, respondent) {
+  function createAssessmentId(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `CP-${year}${month}${day}-${hours}${minutes}${seconds}`;
+  }
+
+  function createExportPayload(values, respondent, assessmentId) {
     return {
+      assessmentId,
       assessment: "CLEARPATH Operational Reality Assessment",
       version: "1.0",
       generatedAt: new Date().toISOString(),
@@ -218,6 +231,17 @@
       }
     });
     const [copyState, setCopyState] = useState("Copy GPT payload");
+    const [assessmentId, setAssessmentId] = useState(() => {
+      const savedId = localStorage.getItem(ASSESSMENT_ID_KEY);
+
+      if (savedId) {
+        return savedId;
+      }
+
+      const nextId = createAssessmentId();
+      localStorage.setItem(ASSESSMENT_ID_KEY, nextId);
+      return nextId;
+    });
     const [respondent, setRespondent] = useState(() => {
       try {
         return {
@@ -252,8 +276,8 @@
 
     const completion = useMemo(() => completionFor(values), [values]);
     const payload = useMemo(
-      () => createExportPayload(values, respondent),
-      [values, respondent]
+      () => createExportPayload(values, respondent, assessmentId),
+      [values, respondent, assessmentId]
     );
     const active = steps[activeStep];
     const stepAnswered = active.fields.filter((field) => values[field.id].trim()).length;
@@ -298,6 +322,9 @@
       if (confirmed) {
         setValues(blankValues);
         setRespondent({ name: "", organization: "", email: "" });
+        const nextId = createAssessmentId();
+        localStorage.setItem(ASSESSMENT_ID_KEY, nextId);
+        setAssessmentId(nextId);
         setActiveStep(0);
       }
     }
@@ -369,7 +396,8 @@
                 submitState,
                 submitMessage,
                 submitToSheets,
-                configuredEndpoint
+                configuredEndpoint,
+                assessmentId
               })
             : h(FormStep, { fields: active.fields, values, updateField }),
           h(
@@ -504,7 +532,8 @@
     submitState,
     submitMessage,
     submitToSheets,
-    configuredEndpoint
+    configuredEndpoint,
+    assessmentId
   }) {
     function updateRespondent(key, value) {
       setRespondent((current) => ({ ...current, [key]: value }));
@@ -542,6 +571,12 @@
         "aside",
         { className: "export-card" },
         h("h3", null, "Submit & export"),
+        h(
+          "div",
+          { className: "assessment-id-card" },
+          h("span", null, "Assessment ID"),
+          h("strong", null, assessmentId)
+        ),
         h(
           "p",
           null,
