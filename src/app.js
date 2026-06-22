@@ -287,6 +287,34 @@
           placeholder: "Describe the automation or augmentation ambitions leadership is considering."
         },
         {
+          id: "aiAmplificationVisibleProblem",
+          label: "AI Amplification Question 1",
+          prompt: "If AI accelerated this workflow by 50% tomorrow, what problem would become visible first?",
+          type: "textarea",
+          placeholder: "Name the bottleneck, ambiguity, dependency, or failure pattern that speed would expose."
+        },
+        {
+          id: "aiHumanJudgmentStabilizers",
+          label: "AI Amplification Question 2",
+          prompt: "What human judgment currently prevents mistakes, escalation, or rework?",
+          type: "textarea",
+          placeholder: "Describe the judgment calls, informal checks, or human corrections holding the workflow together."
+        },
+        {
+          id: "aiTrustWithoutVerificationRisk",
+          label: "AI Amplification Question 3",
+          prompt: "What work would become riskier if employees trusted AI outputs without verification?",
+          type: "textarea",
+          placeholder: "Identify decisions, communications, handoffs, summaries, or routing that require validation."
+        },
+        {
+          id: "aiLeadershipAutomationBeliefs",
+          label: "AI Amplification Question 4",
+          prompt: "Which current operational frustrations does leadership believe AI will solve?",
+          type: "textarea",
+          placeholder: "List the pain points leadership expects AI to fix, automate, or reduce."
+        },
+        {
           id: "aiWorkaroundDependence",
           label: "Workaround Dependence",
           prompt: "Do current workflows depend on manual workarounds, tribal knowledge, side channels, or human correction?",
@@ -547,6 +575,10 @@
         aiGovernanceOwnership: values.aiGovernanceOwnership.trim(),
         aiEscalationRules: values.aiEscalationRules,
         aiAutomationTargets: values.aiAutomationTargets.trim(),
+        aiAmplificationVisibleProblem: values.aiAmplificationVisibleProblem.trim(),
+        aiHumanJudgmentStabilizers: values.aiHumanJudgmentStabilizers.trim(),
+        aiTrustWithoutVerificationRisk: values.aiTrustWithoutVerificationRisk.trim(),
+        aiLeadershipAutomationBeliefs: values.aiLeadershipAutomationBeliefs.trim(),
         aiWorkaroundDependence: values.aiWorkaroundDependence,
         aiRecoverability: values.aiRecoverability,
         aiTrustClimate: values.aiTrustClimate,
