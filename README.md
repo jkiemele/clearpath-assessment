@@ -54,8 +54,12 @@ Because the app has no build step, you can host these files on Netlify, Vercel, 
 
 Each submission includes:
 
+- permanent `assessmentId` such as `CP-20260523-084131`
+- `diagnosticPath`, including the optional `ai_readiness` pathway
 - respondent name, organization, and email
 - completion percentage
 - one column per assessment prompt
+- AI Readiness flat columns when the AI pathway is used
 - the full GPT-ready JSON payload in `fullPayloadJson`
 
+When `diagnosticPath` is `ai_readiness`, the JSON also includes `aiReadiness` with answers, score, readiness state, triggered risk conditions, recommended CLEARPATH stage, and a 30-day readiness plan.
