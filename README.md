@@ -62,6 +62,7 @@ Each submission includes:
 - AI Readiness flat columns when the AI pathway is used
 - AI amplification responses for speed, hidden stabilizers, trust-boundary risk, and leadership automation beliefs
 - AI decision judgment responses for identifying decisions that depend on experience or interpretation
+- derived diagnostics for stability state, governing dynamics, operational reality gap, diagnostic confidence, and contradiction flags
 - the full GPT-ready JSON payload in `fullPayloadJson`
 
 When `diagnosticPath` is `ai_readiness`, the JSON also includes `aiReadiness` with answers, score, readiness state, triggered risk conditions, recommended CLEARPATH stage, and a 30-day readiness plan.
