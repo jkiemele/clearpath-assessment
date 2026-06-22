@@ -33,6 +33,15 @@
     { value: "severe_disruption", label: "Severe disruption" }
   ];
 
+  const exceptionRateOptions = [
+    { value: "", label: "Select standard-process rate" },
+    { value: "90-100", label: "90-100%" },
+    { value: "70-89", label: "70-89%" },
+    { value: "50-69", label: "50-69%" },
+    { value: "30-49", label: "30-49%" },
+    { value: "below-30", label: "Below 30%" }
+  ];
+
   const steps = [
     {
       id: "context",
@@ -125,6 +134,13 @@
           placeholder: "List the shadow systems and manual saves people rely on."
         },
         {
+          id: "dependencyConcentration",
+          label: "Dependency Concentration",
+          prompt: "If your three most experienced employees were unavailable for two weeks, what would become difficult to sustain?",
+          type: "textarea",
+          placeholder: "Name the knowledge, decisions, relationships, or recovery work concentrated in a few people."
+        },
+        {
           id: "coordinationBurden",
           label: "Coordination Burden",
           prompt: "Where do employees spend significant time coordinating, checking status, chasing information, or reconnecting fragmented work?",
@@ -144,6 +160,15 @@
           prompt: "Which parts of the process feel unclear, inconsistent, or open to interpretation?",
           type: "textarea",
           placeholder: "Policies, ownership, decision rights, process steps, definitions..."
+        },
+        {
+          id: "decisionConsistency",
+          label: "Decision Consistency",
+          prompt: "How often would two qualified employees reach different conclusions when reviewing the same work item?",
+          type: "scale",
+          lowLabel: "1 = Almost never",
+          highLabel: "5 = Very often",
+          options: scaleOptions
         },
         {
           id: "priorityEscalation",
@@ -172,6 +197,13 @@
           prompt: "What errors, delays, or operational failures repeatedly reappear despite attempts to fix them?",
           type: "textarea",
           placeholder: "Name the issues that come back after temporary fixes."
+        },
+        {
+          id: "exceptionRate",
+          label: "Exception Rate",
+          prompt: "What percentage of work follows the standard process without requiring exceptions, clarification, escalation, or special handling?",
+          type: "select",
+          options: exceptionRateOptions
         },
         {
           id: "systemStress",
@@ -322,6 +354,15 @@
           placeholder: "Name the decisions where people rely on judgment, context, experience, or interpretation."
         },
         {
+          id: "aiReviewerVariance",
+          label: "AI Reviewer Variance",
+          prompt: "How often would two qualified reviewers reach different conclusions when reviewing the same AI use case, vendor, or AI-assisted workflow?",
+          type: "scale",
+          lowLabel: "1 = Almost never",
+          highLabel: "5 = Very often",
+          options: scaleOptions
+        },
+        {
           id: "aiWorkaroundDependence",
           label: "Workaround Dependence",
           prompt: "Do current workflows depend on manual workarounds, tribal knowledge, side channels, or human correction?",
@@ -407,7 +448,19 @@
 
   function numericValue(value) {
     const number = Number(value);
-    return Number.isFinite(number) ? number : null;
+    return value === "" || value === null || value === undefined || !Number.isFinite(number)
+      ? null
+      : number;
+  }
+
+  function atLeast(value, threshold) {
+    const number = numericValue(value);
+    return number !== null && number >= threshold;
+  }
+
+  function atMost(value, threshold) {
+    const number = numericValue(value);
+    return number !== null && number <= threshold;
   }
 
   function scorePositive(value) {
@@ -465,32 +518,297 @@
     );
   }
 
+  function hasText(value) {
+    return Boolean(String(value || "").trim());
+  }
+
+  function containsAny(value, words) {
+    const text = String(value || "").toLowerCase();
+    return words.some((word) => text.includes(word));
+  }
+
+  function textSignalScore(value) {
+    const text = String(value || "").trim();
+    if (!text) return 0;
+    return text.length > 120 ? 2 : 1;
+  }
+
+  function exceptionRisk(value) {
+    const scores = {
+      "90-100": 0,
+      "70-89": 1,
+      "50-69": 2,
+      "30-49": 3,
+      "below-30": 4
+    };
+    return scores[value] || 0;
+  }
+
+  function realityGapCategory(score) {
+    if (score <= 2) return "Low";
+    if (score <= 5) return "Moderate";
+    if (score <= 8) return "Moderate-High";
+    if (score <= 11) return "High";
+    return "Severe";
+  }
+
+  function createContradictionFlags(values) {
+    const flags = [];
+    const addFlag = (contradictionName, supportingSignals, interpretation) => {
+      flags.push({ contradictionName, supportingSignals, interpretation });
+    };
+
+    if (
+      atLeast(values.aiWorkflowClarity, 4) &&
+      atLeast(values.aiWorkaroundDependence, 4)
+    ) {
+      addFlag(
+        "Workflow Clarity / Workaround Dependence Mismatch",
+        ["AI workflow clarity is rated high", "AI workaround dependence is rated high"],
+        "The workflow may appear clear at the policy level while still depending on informal correction, side channels, or compensatory human stabilization."
+      );
+    }
+
+    if (
+      atLeast(values.aiEscalationRules, 4) &&
+      atMost(values.aiAccountabilityClarity, 2)
+    ) {
+      addFlag(
+        "Escalation Rules / Accountability Gap",
+        ["AI escalation rules are rated high", "AI accountability clarity is rated low"],
+        "Escalation pathways may exist without clear ownership for AI-assisted errors, routing, communication, or downstream decisions."
+      );
+    }
+
+    if (
+      atLeast(values.aiTrustClimate, 4) &&
+      atMost(values.aiValidationExpectations, 2)
+    ) {
+      addFlag(
+        "Trust Climate / Validation Ambiguity",
+        ["AI trust climate is rated high", "AI validation expectations are rated low"],
+        "Employees may feel comfortable using AI outputs without having consistent validation rules, increasing false-confidence risk."
+      );
+    }
+
+    if (
+      containsAny(values.aiApprovedTools, ["none", "no approved", "not approved", "no sanctioned"]) &&
+      atLeast(values.aiShadowUse, 4)
+    ) {
+      addFlag(
+        "No Approved Tools / High Shadow AI Risk",
+        ["Approved AI tools appear absent", "Shadow AI likelihood is high"],
+        "AI adoption may be occurring through invisible or unsanctioned channels before governance has defined safe use boundaries."
+      );
+    }
+
+    if (
+      containsAny(values.symptoms, ["sla", "late", "delay", "waiting", "slow"]) &&
+      !hasText(values.delayWaiting)
+    ) {
+      addFlag(
+        "SLA Frustration / Missing Delay Description",
+        ["Visible symptoms mention time, delay, or SLA pressure", "Delay and waiting detail is blank"],
+        "The assessment signals time-based frustration but has not exposed where waiting, queues, or follow-up burden actually occur."
+      );
+    }
+
+    if (
+      containsAny(`${values.strategicAim} ${values.primarySystem}`, [
+        "standardized",
+        "standard",
+        "consistent",
+        "repeatable"
+      ]) &&
+      ["50-69", "30-49", "below-30"].includes(values.exceptionRate)
+    ) {
+      addFlag(
+        "Standardized System / High Exception Rate",
+        ["The system is described as standardized or repeatable", "Exception rate indicates less than 70% follows the standard process"],
+        "The formal process narrative may be overstating consistency relative to how work actually gets handled."
+      );
+    }
+
+    return flags;
+  }
+
+  function detectGoverningDynamics(values) {
+    const dynamics = [];
+    const add = (dynamic, condition) => {
+      if (condition && !dynamics.includes(dynamic)) dynamics.push(dynamic);
+    };
+
+    add("escalation-governed", hasText(values.escalationPatterns) || hasText(values.priorityEscalation));
+    add("coordination-governed", hasText(values.coordinationBurden));
+    add("interruption-governed", hasText(values.interruptionPatterns));
+    add("visibility-governed", hasText(values.trustErosion) || containsAny(values.coordinationBurden, ["status", "visibility", "follow-up", "follow up"]));
+    add("ambiguity-governed", hasText(values.ambiguity) || atLeast(values.decisionConsistency, 4));
+    add("dependency-governed", hasText(values.dependencyConcentration) || containsAny(`${values.dependencyConcentration} ${values.workarounds}`, ["tribal", "experienced", "only person", "key person", "knowledge"]));
+    add("workaround-governed", hasText(values.workarounds));
+    add("classification-governed", atLeast(values.decisionConsistency, 4) || atMost(values.aiClassificationConsistency, 2) || atLeast(values.aiReviewerVariance, 4));
+    add("governance-governed", containsAny(values.aiGovernanceOwnership, ["unclear", "no owner", "nobody", "unknown"]) || atMost(values.aiEscalationRules, 2));
+
+    return dynamics;
+  }
+
+  function classifyStabilityState(values, gapCategory, dynamics) {
+    const highWorkaround = hasText(values.workarounds) || atLeast(values.aiWorkaroundDependence, 4);
+    const highDependency = hasText(values.dependencyConcentration);
+    const highCoordination = hasText(values.coordinationBurden);
+    const highEscalation = hasText(values.escalationPatterns) || hasText(values.priorityEscalation);
+    const lowTrust = hasText(values.trustErosion) || atMost(values.aiTrustClimate, 2);
+    const unclearWorkflow = hasText(values.ambiguity) || atMost(values.aiWorkflowClarity, 2);
+    const repeatedFailure = hasText(values.repeatedFailure);
+    const lowRecoverability = atMost(values.aiRecoverability, 2);
+    const highSensitiveAiRisk = atLeast(values.aiSensitiveDataExposure, 4);
+    const inconsistentDecisions = atLeast(values.decisionConsistency, 4) || atLeast(values.aiReviewerVariance, 4);
+
+    if (highWorkaround && highDependency) return "Dependency-Stabilized";
+    if (highCoordination && (hasText(values.delayWaiting) || containsAny(values.coordinationBurden, ["clarification", "follow-up", "follow up", "chasing"]))) return "Coordination-Saturated";
+    if (highEscalation) return "Escalation-Stabilized";
+    if (lowRecoverability && highSensitiveAiRisk) return "Recoverability-Impaired";
+    if (lowTrust && unclearWorkflow && repeatedFailure) return "Reactive";
+    if (hasText(values.ambiguity) && inconsistentDecisions && (hasText(values.workarounds) || hasText(values.entryPoint))) return "Structurally Fragmented";
+    if (gapCategory === "Low" && dynamics.length <= 1) return "Stable";
+    return "Fragile";
+  }
+
+  function diagnosticConfidence(values, completion, dynamics, contradictionFlags) {
+    let score = 0;
+    if (completion.percent >= 85) score += 3;
+    else if (completion.percent >= 65) score += 2;
+    else if (completion.percent >= 45) score += 1;
+
+    const specificityFields = [
+      "primarySystem",
+      "strategicAim",
+      "symptoms",
+      "workarounds",
+      "dependencyConcentration",
+      "ambiguity",
+      "repeatedFailure",
+      "aiCurrentUse",
+      "aiDecisionJudgment",
+      "aiAmplificationVisibleProblem"
+    ];
+    const specificAnswers = specificityFields.filter((field) => textSignalScore(values[field]) >= 2).length;
+    if (specificAnswers >= 5) score += 2;
+    else if (specificAnswers >= 2) score += 1;
+
+    if (dynamics.length >= 4) score += 2;
+    else if (dynamics.length >= 2) score += 1;
+
+    if (hasText(values.workarounds) && (atLeast(values.aiWorkaroundDependence, 4) || hasText(values.aiDecisionJudgment))) score += 1;
+    if (!hasText(values.primarySystem) || !hasText(values.strategicAim)) score -= 1;
+    if (contradictionFlags.length >= 3) score -= 2;
+    else if (contradictionFlags.length) score -= 1;
+
+    if (score >= 6) return "High";
+    if (score >= 4) return "Moderate-High";
+    if (score >= 2) return "Moderate";
+    return "Low";
+  }
+
+  function createDerivedDiagnostics(values) {
+    const gapSignals = [
+      textSignalScore(values.workarounds),
+      textSignalScore(values.dependencyConcentration),
+      textSignalScore(values.ambiguity),
+      Math.max(0, numericValue(values.decisionConsistency) - 2 || 0),
+      textSignalScore(values.trustErosion),
+      textSignalScore(values.repeatedFailure),
+      numericValue(values.aiWorkflowClarity) ? Math.max(0, 4 - numericValue(values.aiWorkflowClarity)) : 0,
+      numericValue(values.aiWorkaroundDependence) ? Math.max(0, numericValue(values.aiWorkaroundDependence) - 2) : 0,
+      textSignalScore(values.aiDecisionJudgment),
+      Math.max(0, numericValue(values.aiReviewerVariance) - 2 || 0),
+      exceptionRisk(values.exceptionRate)
+    ];
+    const operationalRealityGapScore = gapSignals.reduce((sum, signal) => sum + signal, 0);
+    const operationalRealityGap = realityGapCategory(operationalRealityGapScore);
+    const governingDynamics = detectGoverningDynamics(values);
+    const contradictionFlags = createContradictionFlags(values);
+    const completion = completionFor(values);
+    const stabilityState = classifyStabilityState(values, operationalRealityGap, governingDynamics);
+
+    return {
+      stabilityState,
+      governingDynamics,
+      primaryGoverningDynamic: governingDynamics[0] || "none-detected",
+      operationalRealityGap,
+      operationalRealityGapScore,
+      operationalRealityGapInterpretation:
+        "This measures the distance between formal process design and how work actually gets done.",
+      diagnosticConfidence: diagnosticConfidence(values, completion, governingDynamics, contradictionFlags),
+      contradictionFlags,
+      primaryOutputEmphasis: [
+        "stabilityState",
+        "governingDynamics",
+        "operationalRealityGap",
+        "aiAmplificationRisk",
+        "recommendedClearpathStage"
+      ],
+      reportStructure: [
+        "Executive Summary",
+        "Stability State Classification",
+        "Visible Symptoms",
+        "Hidden Operational Conditions",
+        "Primary CLEARPATH Diagnosis",
+        "Governing Dynamic",
+        "SEDRI Stage Assessment",
+        "Operational Severity Map",
+        "Operational Reality Gap",
+        "AI Readiness Profile",
+        "AI Governance Risk Conditions",
+        "AI Decision Architecture Risk",
+        "Likely Business Impact",
+        "Executive Blind Spots",
+        "Hidden Dependency Nodes",
+        "Contradiction Flags",
+        "Highest-Leverage Stabilization Point",
+        "Top 3 Stabilization Priorities",
+        "What Not To Do Yet",
+        "30-Day Action Plan",
+        "Executive Narrative",
+        "Diagnostic Confidence",
+        "Additional Exposure Needed"
+      ]
+    };
+  }
+
   function triggeredCondition(name, triggered, output) {
     return triggered ? { name, output } : null;
   }
 
   function recommendedStageFor(values) {
-    const validation = numericValue(values.aiValidationExpectations);
-    const accountability = numericValue(values.aiAccountabilityClarity);
-    const escalation = numericValue(values.aiEscalationRules);
-    const shadow = numericValue(values.aiShadowUse);
-    const workaround = numericValue(values.aiWorkaroundDependence);
-    const classification = numericValue(values.aiClassificationConsistency);
-    const workflow = numericValue(values.aiWorkflowClarity);
-
-    if (validation <= 2 || accountability <= 2 || escalation <= 2) {
+    if (
+      atMost(values.aiValidationExpectations, 2) ||
+      atMost(values.aiAccountabilityClarity, 2) ||
+      atMost(values.aiEscalationRules, 2)
+    ) {
       return "Stabilize";
     }
 
-    if (shadow >= 4 || workaround >= 4 || currentUseIndicatesInformalUse(values.aiCurrentUse)) {
+    if (
+      atLeast(values.aiShadowUse, 4) ||
+      atLeast(values.aiWorkaroundDependence, 4) ||
+      currentUseIndicatesInformalUse(values.aiCurrentUse)
+    ) {
       return "Expose";
     }
 
-    if (classification <= 2 || workflow <= 2) {
+    if (
+      atMost(values.aiClassificationConsistency, 2) ||
+      atMost(values.aiWorkflowClarity, 2) ||
+      atLeast(values.aiReviewerVariance, 4)
+    ) {
       return "Diagnose";
     }
 
-    if (workflow >= 4 && classification >= 3 && validation >= 3) {
+    if (
+      atLeast(values.aiWorkflowClarity, 4) &&
+      atLeast(values.aiClassificationConsistency, 3) &&
+      atLeast(values.aiValidationExpectations, 3)
+    ) {
       return "Redesign";
     }
 
@@ -527,45 +845,50 @@
     const riskConditions = [
       triggeredCondition(
         "Shadow AI Risk",
-        numericValue(values.aiShadowUse) >= 4 ||
+        atLeast(values.aiShadowUse, 4) ||
           currentUseIndicatesInformalUse(values.aiCurrentUse),
         "AI adoption may already be occurring outside formal visibility. The organization should expose actual AI usage before expanding governance controls."
       ),
       triggeredCondition(
         "Classification Instability",
-        numericValue(values.aiClassificationConsistency) <= 2,
+        atMost(values.aiClassificationConsistency, 2),
         "AI governance risk is elevated because similar AI use cases may be classified differently across reviewers, teams, or departments."
       ),
       triggeredCondition(
         "Validation Ambiguity",
-        numericValue(values.aiValidationExpectations) <= 2,
+        atMost(values.aiValidationExpectations, 2),
         "Human-AI trust boundaries are unclear. Teams may over-trust, under-trust, or inconsistently validate AI-generated outputs."
       ),
       triggeredCondition(
         "Accountability Gap",
-        numericValue(values.aiAccountabilityClarity) <= 2,
+        atMost(values.aiAccountabilityClarity, 2),
         "AI-assisted work lacks clear accountability. This increases risk when outputs influence decisions, routing, communication, or operational action."
       ),
       triggeredCondition(
         "Automation Readiness Gap",
-        numericValue(values.aiWorkflowClarity) <= 2 ||
-          numericValue(values.aiWorkaroundDependence) >= 4,
+        atMost(values.aiWorkflowClarity, 2) ||
+          atLeast(values.aiWorkaroundDependence, 4),
         "Automation risk is elevated because current workflows appear unstable, workaround-dependent, or inconsistently understood."
       ),
       triggeredCondition(
         "Sensitive Data Exposure",
-        numericValue(values.aiSensitiveDataExposure) >= 4,
+        atLeast(values.aiSensitiveDataExposure, 4),
         "AI use may involve sensitive or regulated data. Governance should clarify data boundaries, approved use cases, and review requirements before scaling adoption."
       ),
       triggeredCondition(
         "Recoverability Deficit",
-        numericValue(values.aiRecoverability) <= 2,
+        atMost(values.aiRecoverability, 2),
         "The organization may struggle to detect and correct AI-related errors before they propagate downstream."
       ),
       triggeredCondition(
         "Trust Climate Risk",
-        numericValue(values.aiTrustClimate) <= 2,
+        atMost(values.aiTrustClimate, 2),
         "Employees may not feel safe or empowered to challenge AI-generated outputs, which increases the risk of false confidence and poor validation behavior."
+      ),
+      triggeredCondition(
+        "AI Decision Architecture Risk",
+        atLeast(values.aiReviewerVariance, 4) || hasText(values.aiDecisionJudgment),
+        "AI use may be entering decision spaces that depend on experience, interpretation, or reviewer judgment rather than explicit operating rules."
       )
     ].filter(Boolean);
 
@@ -587,6 +910,7 @@
         aiTrustWithoutVerificationRisk: values.aiTrustWithoutVerificationRisk.trim(),
         aiLeadershipAutomationBeliefs: values.aiLeadershipAutomationBeliefs.trim(),
         aiDecisionJudgment: values.aiDecisionJudgment.trim(),
+        aiReviewerVariance: values.aiReviewerVariance,
         aiWorkaroundDependence: values.aiWorkaroundDependence,
         aiRecoverability: values.aiRecoverability,
         aiTrustClimate: values.aiTrustClimate,
@@ -600,6 +924,53 @@
       riskConditions,
       operationalReadinessInterpretation:
         "Analyze what AI is likely to amplify in the current system: ambiguity, hidden work, governance drift, classification inconsistency, workflow fragmentation, human validation burden, escalation behavior, and trust instability.",
+      interpretationLayers: {
+        aiGovernance: {
+          focus: "Approved tools, ownership, escalation rules, and accountability.",
+          signals: {
+            approvedTools: values.aiApprovedTools.trim(),
+            governanceOwnership: values.aiGovernanceOwnership.trim(),
+            escalationRules: values.aiEscalationRules,
+            accountabilityClarity: values.aiAccountabilityClarity
+          }
+        },
+        operationalAiReadiness: {
+          focus: "Workflow clarity, workaround dependence, recoverability, and validation expectations.",
+          signals: {
+            workflowClarity: values.aiWorkflowClarity,
+            workaroundDependence: values.aiWorkaroundDependence,
+            recoverability: values.aiRecoverability,
+            validationExpectations: values.aiValidationExpectations
+          }
+        },
+        aiAmplificationRisk: {
+          focus: "What AI would expose first, hidden human stabilizers, trust-without-verification risk, and leadership automation beliefs.",
+          signals: {
+            visibleProblem: values.aiAmplificationVisibleProblem.trim(),
+            humanJudgmentStabilizers: values.aiHumanJudgmentStabilizers.trim(),
+            trustWithoutVerificationRisk: values.aiTrustWithoutVerificationRisk.trim(),
+            leadershipAutomationBeliefs: values.aiLeadershipAutomationBeliefs.trim()
+          }
+        },
+        decisionArchitecture: {
+          focus: "Experience-based decisions, reviewer variance, classification consistency, and policy-reality gaps.",
+          signals: {
+            decisionJudgment: values.aiDecisionJudgment.trim(),
+            reviewerVariance: values.aiReviewerVariance,
+            classificationConsistency: values.aiClassificationConsistency,
+            policyRealityGap:
+              "Compare formal AI governance claims against workaround dependence, hidden usage, decision variance, and validation ambiguity."
+          }
+        }
+      },
+      automationGuardrails: [
+        "Do not recommend broad AI automation if workflows are unclear.",
+        "Do not recommend broad AI automation if workaround dependence is high.",
+        "Do not recommend broad AI automation if reviewer variance is high.",
+        "Do not recommend broad AI automation if accountability is unclear.",
+        "Do not recommend broad AI automation if validation expectations are weak.",
+        "Do not recommend broad AI automation if sensitive data exposure is high."
+      ],
       recommendedClearpathStage: recommendedStageFor(values),
       thirtyDayPlan: [
         {
@@ -629,6 +1000,7 @@
 
   function createExportPayload(values, respondent, assessmentId) {
     const aiReadiness = createAiReadiness(values);
+    const derivedDiagnostics = createDerivedDiagnostics(values);
 
     return {
       assessmentId,
@@ -654,6 +1026,7 @@
             response: String(values[field.id] || "").trim()
           }))
         })),
+      derivedDiagnostics,
       aiReadiness
     };
   }
