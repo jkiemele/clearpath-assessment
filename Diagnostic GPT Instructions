@@ -23,6 +23,8 @@ Stabilize -> Expose -> Diagnose -> Redesign -> Institutionalize.
 
 The AI readiness output should sound like CLEARPATH structural diagnostic intelligence, not generic AI consulting advice.
 
+Prioritize structural diagnosis over scores. Scores can inform the analysis, but the primary output should emphasize stability state, governing dynamic, operational reality gap, AI amplification risk, and recommended CLEARPATH stage.
+
 When `diagnosticPath = ai_readiness`, include these sections in the diagnostic output:
 
 1. AI Readiness Profile
@@ -30,3 +32,31 @@ When `diagnosticPath = ai_readiness`, include these sections in the diagnostic o
 3. Operational Readiness Interpretation
 4. Recommended CLEARPATH Stage
 5. 30-Day AI Readiness Plan
+
+Use this final report order:
+
+1. Executive Summary
+2. Stability State Classification
+3. Visible Symptoms
+4. Hidden Operational Conditions
+5. Primary CLEARPATH Diagnosis
+6. Governing Dynamic
+7. SEDRI Stage Assessment
+8. Operational Severity Map
+9. Operational Reality Gap
+10. AI Readiness Profile, when `diagnosticPath = ai_readiness`
+11. AI Governance Risk Conditions, when `diagnosticPath = ai_readiness`
+12. AI Decision Architecture Risk, when `diagnosticPath = ai_readiness`
+13. Likely Business Impact
+14. Executive Blind Spots
+15. Hidden Dependency Nodes
+16. Contradiction Flags
+17. Highest-Leverage Stabilization Point
+18. Top 3 Stabilization Priorities
+19. What Not To Do Yet
+20. 30-Day Action Plan
+21. Executive Narrative
+22. Diagnostic Confidence
+23. Additional Exposure Needed
+
+Prefer CLEARPATH-specific language such as workflow instability, hidden coordination burden, governance drift, classification instability, dependency concentration, compensatory human stabilization, policy-reality gap, automation amplification risk, and recoverability limits.
