@@ -315,6 +315,13 @@
           placeholder: "List the pain points leadership expects AI to fix, automate, or reduce."
         },
         {
+          id: "aiDecisionJudgment",
+          label: "AI Decision Question",
+          prompt: "Which decisions in this workflow currently depend on experience, interpretation, or judgment rather than explicit rules?",
+          type: "textarea",
+          placeholder: "Name the decisions where people rely on judgment, context, experience, or interpretation."
+        },
+        {
           id: "aiWorkaroundDependence",
           label: "Workaround Dependence",
           prompt: "Do current workflows depend on manual workarounds, tribal knowledge, side channels, or human correction?",
@@ -579,6 +586,7 @@
         aiHumanJudgmentStabilizers: values.aiHumanJudgmentStabilizers.trim(),
         aiTrustWithoutVerificationRisk: values.aiTrustWithoutVerificationRisk.trim(),
         aiLeadershipAutomationBeliefs: values.aiLeadershipAutomationBeliefs.trim(),
+        aiDecisionJudgment: values.aiDecisionJudgment.trim(),
         aiWorkaroundDependence: values.aiWorkaroundDependence,
         aiRecoverability: values.aiRecoverability,
         aiTrustClimate: values.aiTrustClimate,
