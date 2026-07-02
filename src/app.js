@@ -24,15 +24,6 @@
     { value: "5", label: "5" }
   ];
 
-  const dependencyOptions = [
-    { value: "", label: "Select disruption level" },
-    { value: "almost_none", label: "Almost none" },
-    { value: "isolated_workflows", label: "Isolated workflows" },
-    { value: "several_important_workflows", label: "Several important workflows" },
-    { value: "many_critical_workflows", label: "Many critical workflows" },
-    { value: "severe_disruption", label: "Severe disruption" }
-  ];
-
   const exceptionRateOptions = [
     { value: "", label: "Select standard-process rate" },
     { value: "90-100", label: "90-100%" },
@@ -84,13 +75,6 @@
       title: "Operational Pain",
       kicker: "Capture the visible instability.",
       fields: [
-        {
-          id: "symptoms",
-          label: "Symptoms",
-          prompt: "Where is operational pain most visible to the team or customers?",
-          type: "textarea",
-          placeholder: "Missed handoffs, late responses, rework, complaints, backlog spikes..."
-        },
         {
           id: "escalationPatterns",
           label: "Escalation Patterns",
@@ -157,25 +141,9 @@
         {
           id: "ambiguity",
           label: "Ambiguity",
-          prompt: "Which parts of the process feel unclear, inconsistent, or open to interpretation?",
+          prompt: "Where is the process open to interpretation, and how often does that cause different employees to handle the same situation differently?",
           type: "textarea",
-          placeholder: "Policies, ownership, decision rights, process steps, definitions..."
-        },
-        {
-          id: "decisionConsistency",
-          label: "Decision Consistency",
-          prompt: "How often would two qualified employees reach different conclusions when reviewing the same work item?",
-          type: "scale",
-          lowLabel: "1 = Almost never",
-          highLabel: "5 = Very often",
-          options: scaleOptions
-        },
-        {
-          id: "priorityEscalation",
-          label: "Priority Escalation",
-          prompt: "Where do priorities frequently shift, conflict, or require escalation to gain attention?",
-          type: "textarea",
-          placeholder: "Describe the areas where urgency or authority becomes unclear."
+          placeholder: "Describe the unclear rules, judgment calls, or situations where qualified people handle the same case differently."
         },
         {
           id: "trustErosion",
@@ -211,13 +179,6 @@
           prompt: "When volume, urgency, or complexity increases, where does the system begin to break down first?",
           type: "textarea",
           placeholder: "Describe the first pressure points that show strain."
-        },
-        {
-          id: "trustDrivers",
-          label: "Trust Drivers",
-          prompt: "What would make this system feel calmer, more predictable, or easier to trust?",
-          type: "textarea",
-          placeholder: "Name the shifts, controls, rhythms, or visibility people need."
         }
       ]
     },
@@ -230,25 +191,9 @@
         {
           id: "aiCurrentUse",
           label: "Current AI Use",
-          prompt: "Where is AI currently being used in the organization?",
+          prompt: "What AI tools are currently being used across the team, both formally approved and informal shadow AI workarounds?",
           type: "textarea",
-          placeholder: "Describe known AI tools, use cases, teams, vendors, pilots, or informal adoption."
-        },
-        {
-          id: "aiApprovedTools",
-          label: "Approved Tools",
-          prompt: "Are there approved AI tools or sanctioned use cases?",
-          type: "textarea",
-          placeholder: "List sanctioned tools, approved workflows, policies, or known restrictions."
-        },
-        {
-          id: "aiShadowUse",
-          label: "Shadow AI Use",
-          prompt: "Are teams likely using AI tools outside formal visibility or approval?",
-          type: "scale",
-          lowLabel: "1 = not likely",
-          highLabel: "5 = very likely",
-          options: scaleOptions
+          placeholder: "Include approved platforms, informal tools, pilots, personal accounts, or known unsanctioned uses."
         },
         {
           id: "aiSensitiveDataExposure",
@@ -257,24 +202,6 @@
           type: "scale",
           lowLabel: "1 = no meaningful exposure",
           highLabel: "5 = significant exposure",
-          options: scaleOptions
-        },
-        {
-          id: "aiWorkflowClarity",
-          label: "Workflow Clarity",
-          prompt: "Are the workflows targeted for AI clear, stable, and consistently followed today?",
-          type: "scale",
-          lowLabel: "1 = unclear / inconsistent",
-          highLabel: "5 = clear / stable",
-          options: scaleOptions
-        },
-        {
-          id: "aiClassificationConsistency",
-          label: "Classification Consistency",
-          prompt: "Would different reviewers classify the same AI use case or AI vendor the same way?",
-          type: "scale",
-          lowLabel: "1 = highly inconsistent",
-          highLabel: "5 = highly consistent",
           options: scaleOptions
         },
         {
@@ -298,25 +225,16 @@
         {
           id: "aiGovernanceOwnership",
           label: "Governance Ownership",
-          prompt: "Who owns AI governance decisions today?",
+          prompt: "Who owns AI governance decisions today, and are there clear boundaries for when a use case requires legal, security, compliance, or executive approval?",
           type: "textarea",
-          placeholder: "Name the roles, committees, teams, or decision forums involved."
-        },
-        {
-          id: "aiEscalationRules",
-          label: "Escalation Rules",
-          prompt: "Are there clear rules for when AI use requires escalation, legal review, security review, compliance review, or executive approval?",
-          type: "scale",
-          lowLabel: "1 = unclear",
-          highLabel: "5 = very clear",
-          options: scaleOptions
+          placeholder: "Name owners, approval boundaries, review triggers, and unclear decision rights."
         },
         {
           id: "aiAutomationTargets",
           label: "Automation Targets",
-          prompt: "What workflows, decisions, or processes does leadership want to automate or augment with AI?",
+          prompt: "What processes does leadership want to automate or augment with AI, and are those workflows stable and consistently followed today?",
           type: "textarea",
-          placeholder: "Describe the automation or augmentation ambitions leadership is considering."
+          placeholder: "Describe the target workflows and whether they are stable enough for automation."
         },
         {
           id: "aiAmplificationVisibleProblem",
@@ -354,24 +272,6 @@
           placeholder: "Name the decisions where people rely on judgment, context, experience, or interpretation."
         },
         {
-          id: "aiReviewerVariance",
-          label: "AI Reviewer Variance",
-          prompt: "How often would two qualified reviewers reach different conclusions when reviewing the same AI use case, vendor, or AI-assisted workflow?",
-          type: "scale",
-          lowLabel: "1 = Almost never",
-          highLabel: "5 = Very often",
-          options: scaleOptions
-        },
-        {
-          id: "aiWorkaroundDependence",
-          label: "Workaround Dependence",
-          prompt: "Do current workflows depend on manual workarounds, tribal knowledge, side channels, or human correction?",
-          type: "scale",
-          lowLabel: "1 = minimal dependence",
-          highLabel: "5 = heavy dependence",
-          options: scaleOptions
-        },
-        {
           id: "aiRecoverability",
           label: "Recoverability",
           prompt: "If AI creates an error, poor recommendation, incorrect routing, or misleading output, how quickly could the organization detect and correct it?",
@@ -379,22 +279,6 @@
           lowLabel: "1 = difficult to detect/correct",
           highLabel: "5 = quickly detectable/correctable",
           options: scaleOptions
-        },
-        {
-          id: "aiTrustClimate",
-          label: "Trust Climate",
-          prompt: "Do employees feel comfortable questioning, validating, or rejecting AI-generated outputs?",
-          type: "scale",
-          lowLabel: "1 = no / unclear",
-          highLabel: "5 = yes / strongly",
-          options: scaleOptions
-        },
-        {
-          id: "aiDependencyQuestion",
-          label: "AI Dependency",
-          prompt: "If AI-generated outputs disappeared tomorrow, how disrupted would current work be?",
-          type: "select",
-          options: dependencyOptions
         }
       ]
     },
@@ -559,18 +443,18 @@
     };
 
     if (
-      atLeast(values.aiWorkflowClarity, 4) &&
-      atLeast(values.aiWorkaroundDependence, 4)
+      containsAny(values.aiAutomationTargets, ["stable", "consistent", "clear"]) &&
+      hasText(values.workarounds)
     ) {
       addFlag(
         "Workflow Clarity / Workaround Dependence Mismatch",
-        ["AI workflow clarity is rated high", "AI workaround dependence is rated high"],
+        ["AI automation target is described as stable or clear", "Core workflow workarounds are present"],
         "The workflow may appear clear at the policy level while still depending on informal correction, side channels, or compensatory human stabilization."
       );
     }
 
     if (
-      atLeast(values.aiEscalationRules, 4) &&
+      containsAny(values.aiGovernanceOwnership, ["clear", "defined", "approval", "legal", "security"]) &&
       atMost(values.aiAccountabilityClarity, 2)
     ) {
       addFlag(
@@ -580,20 +464,17 @@
       );
     }
 
-    if (
-      atLeast(values.aiTrustClimate, 4) &&
-      atMost(values.aiValidationExpectations, 2)
-    ) {
+    if (hasText(values.aiTrustWithoutVerificationRisk) && atMost(values.aiValidationExpectations, 2)) {
       addFlag(
         "Trust Climate / Validation Ambiguity",
-        ["AI trust climate is rated high", "AI validation expectations are rated low"],
+        ["Trust-without-verification risk is described", "AI validation expectations are rated low"],
         "Employees may feel comfortable using AI outputs without having consistent validation rules, increasing false-confidence risk."
       );
     }
 
     if (
-      containsAny(values.aiApprovedTools, ["none", "no approved", "not approved", "no sanctioned"]) &&
-      atLeast(values.aiShadowUse, 4)
+      containsAny(values.aiCurrentUse, ["none approved", "no approved", "not approved", "no sanctioned"]) &&
+      currentUseIndicatesInformalUse(values.aiCurrentUse)
     ) {
       addFlag(
         "No Approved Tools / High Shadow AI Risk",
@@ -603,12 +484,12 @@
     }
 
     if (
-      containsAny(values.symptoms, ["sla", "late", "delay", "waiting", "slow"]) &&
+      containsAny(`${values.systemStress} ${values.interruptionPatterns}`, ["sla", "late", "delay", "waiting", "slow"]) &&
       !hasText(values.delayWaiting)
     ) {
       addFlag(
         "SLA Frustration / Missing Delay Description",
-        ["Visible symptoms mention time, delay, or SLA pressure", "Delay and waiting detail is blank"],
+        ["Stress or interruption detail mentions time, delay, or SLA pressure", "Delay and waiting detail is blank"],
         "The assessment signals time-based frustration but has not exposed where waiting, queues, or follow-up burden actually occur."
       );
     }
@@ -638,30 +519,30 @@
       if (condition && !dynamics.includes(dynamic)) dynamics.push(dynamic);
     };
 
-    add("escalation-governed", hasText(values.escalationPatterns) || hasText(values.priorityEscalation));
+    add("escalation-governed", hasText(values.escalationPatterns));
     add("coordination-governed", hasText(values.coordinationBurden));
     add("interruption-governed", hasText(values.interruptionPatterns));
     add("visibility-governed", hasText(values.trustErosion) || containsAny(values.coordinationBurden, ["status", "visibility", "follow-up", "follow up"]));
-    add("ambiguity-governed", hasText(values.ambiguity) || atLeast(values.decisionConsistency, 4));
+    add("ambiguity-governed", hasText(values.ambiguity));
     add("dependency-governed", hasText(values.dependencyConcentration) || containsAny(`${values.dependencyConcentration} ${values.workarounds}`, ["tribal", "experienced", "only person", "key person", "knowledge"]));
     add("workaround-governed", hasText(values.workarounds));
-    add("classification-governed", atLeast(values.decisionConsistency, 4) || atMost(values.aiClassificationConsistency, 2) || atLeast(values.aiReviewerVariance, 4));
-    add("governance-governed", containsAny(values.aiGovernanceOwnership, ["unclear", "no owner", "nobody", "unknown"]) || atMost(values.aiEscalationRules, 2));
+    add("classification-governed", containsAny(`${values.ambiguity} ${values.aiDecisionJudgment}`, ["different", "interpretation", "judgment", "classify", "classification", "varies"]));
+    add("governance-governed", containsAny(values.aiGovernanceOwnership, ["unclear", "no owner", "nobody", "unknown", "not defined"]));
 
     return dynamics;
   }
 
   function classifyStabilityState(values, gapCategory, dynamics) {
-    const highWorkaround = hasText(values.workarounds) || atLeast(values.aiWorkaroundDependence, 4);
+    const highWorkaround = hasText(values.workarounds);
     const highDependency = hasText(values.dependencyConcentration);
     const highCoordination = hasText(values.coordinationBurden);
-    const highEscalation = hasText(values.escalationPatterns) || hasText(values.priorityEscalation);
-    const lowTrust = hasText(values.trustErosion) || atMost(values.aiTrustClimate, 2);
-    const unclearWorkflow = hasText(values.ambiguity) || atMost(values.aiWorkflowClarity, 2);
+    const highEscalation = hasText(values.escalationPatterns);
+    const lowTrust = hasText(values.trustErosion) || hasText(values.aiTrustWithoutVerificationRisk);
+    const unclearWorkflow = hasText(values.ambiguity) || containsAny(values.aiAutomationTargets, ["unclear", "unstable", "inconsistent", "not stable", "varies"]);
     const repeatedFailure = hasText(values.repeatedFailure);
     const lowRecoverability = atMost(values.aiRecoverability, 2);
     const highSensitiveAiRisk = atLeast(values.aiSensitiveDataExposure, 4);
-    const inconsistentDecisions = atLeast(values.decisionConsistency, 4) || atLeast(values.aiReviewerVariance, 4);
+    const inconsistentDecisions = containsAny(`${values.ambiguity} ${values.aiDecisionJudgment}`, ["different", "interpretation", "judgment", "varies", "inconsistent"]);
 
     if (highWorkaround && highDependency) return "Dependency-Stabilized";
     if (highCoordination && (hasText(values.delayWaiting) || containsAny(values.coordinationBurden, ["clarification", "follow-up", "follow up", "chasing"]))) return "Coordination-Saturated";
@@ -682,7 +563,7 @@
     const specificityFields = [
       "primarySystem",
       "strategicAim",
-      "symptoms",
+      "systemStress",
       "workarounds",
       "dependencyConcentration",
       "ambiguity",
@@ -698,7 +579,7 @@
     if (dynamics.length >= 4) score += 2;
     else if (dynamics.length >= 2) score += 1;
 
-    if (hasText(values.workarounds) && (atLeast(values.aiWorkaroundDependence, 4) || hasText(values.aiDecisionJudgment))) score += 1;
+    if (hasText(values.workarounds) && hasText(values.aiDecisionJudgment)) score += 1;
     if (!hasText(values.primarySystem) || !hasText(values.strategicAim)) score -= 1;
     if (contradictionFlags.length >= 3) score -= 2;
     else if (contradictionFlags.length) score -= 1;
@@ -714,13 +595,13 @@
       textSignalScore(values.workarounds),
       textSignalScore(values.dependencyConcentration),
       textSignalScore(values.ambiguity),
-      Math.max(0, numericValue(values.decisionConsistency) - 2 || 0),
+      containsAny(values.ambiguity, ["different", "varies", "inconsistent", "interpretation"]) ? 2 : 0,
       textSignalScore(values.trustErosion),
       textSignalScore(values.repeatedFailure),
-      numericValue(values.aiWorkflowClarity) ? Math.max(0, 4 - numericValue(values.aiWorkflowClarity)) : 0,
-      numericValue(values.aiWorkaroundDependence) ? Math.max(0, numericValue(values.aiWorkaroundDependence) - 2) : 0,
+      containsAny(values.aiAutomationTargets, ["unclear", "unstable", "inconsistent", "not stable", "varies"]) ? 2 : 0,
+      hasText(values.workarounds) ? 2 : 0,
       textSignalScore(values.aiDecisionJudgment),
-      Math.max(0, numericValue(values.aiReviewerVariance) - 2 || 0),
+      containsAny(values.aiDecisionJudgment, ["judgment", "interpretation", "experience", "varies", "different"]) ? 2 : 0,
       exceptionRisk(values.exceptionRate)
     ];
     const operationalRealityGapScore = gapSignals.reduce((sum, signal) => sum + signal, 0);
@@ -783,30 +664,27 @@
     if (
       atMost(values.aiValidationExpectations, 2) ||
       atMost(values.aiAccountabilityClarity, 2) ||
-      atMost(values.aiEscalationRules, 2)
+      containsAny(values.aiGovernanceOwnership, ["unclear", "no owner", "nobody", "unknown", "not defined"])
     ) {
       return "Stabilize";
     }
 
     if (
-      atLeast(values.aiShadowUse, 4) ||
-      atLeast(values.aiWorkaroundDependence, 4) ||
-      currentUseIndicatesInformalUse(values.aiCurrentUse)
+      currentUseIndicatesInformalUse(values.aiCurrentUse) ||
+      hasText(values.workarounds)
     ) {
       return "Expose";
     }
 
     if (
-      atMost(values.aiClassificationConsistency, 2) ||
-      atMost(values.aiWorkflowClarity, 2) ||
-      atLeast(values.aiReviewerVariance, 4)
+      containsAny(values.aiAutomationTargets, ["unclear", "unstable", "inconsistent", "not stable", "varies"]) ||
+      containsAny(values.aiDecisionJudgment, ["judgment", "interpretation", "experience", "different", "varies"])
     ) {
       return "Diagnose";
     }
 
     if (
-      atLeast(values.aiWorkflowClarity, 4) &&
-      atLeast(values.aiClassificationConsistency, 3) &&
+      containsAny(values.aiAutomationTargets, ["stable", "consistent", "clear"]) &&
       atLeast(values.aiValidationExpectations, 3)
     ) {
       return "Redesign";
@@ -821,18 +699,12 @@
     }
 
     const positiveScores = [
-      "aiWorkflowClarity",
-      "aiClassificationConsistency",
       "aiValidationExpectations",
       "aiAccountabilityClarity",
-      "aiEscalationRules",
-      "aiRecoverability",
-      "aiTrustClimate"
+      "aiRecoverability"
     ].map((id) => scorePositive(values[id]));
     const riskScores = [
-      "aiShadowUse",
-      "aiSensitiveDataExposure",
-      "aiWorkaroundDependence"
+      "aiSensitiveDataExposure"
     ].map((id) => scoreRisk(values[id]));
     const normalizedScores = positiveScores.concat(riskScores).filter((score) => score !== null);
     const score = normalizedScores.length
@@ -845,13 +717,12 @@
     const riskConditions = [
       triggeredCondition(
         "Shadow AI Risk",
-        atLeast(values.aiShadowUse, 4) ||
-          currentUseIndicatesInformalUse(values.aiCurrentUse),
+        currentUseIndicatesInformalUse(values.aiCurrentUse),
         "AI adoption may already be occurring outside formal visibility. The organization should expose actual AI usage before expanding governance controls."
       ),
       triggeredCondition(
         "Classification Instability",
-        atMost(values.aiClassificationConsistency, 2),
+        containsAny(values.aiDecisionJudgment, ["different", "varies", "classification", "interpretation", "judgment"]),
         "AI governance risk is elevated because similar AI use cases may be classified differently across reviewers, teams, or departments."
       ),
       triggeredCondition(
@@ -866,8 +737,8 @@
       ),
       triggeredCondition(
         "Automation Readiness Gap",
-        atMost(values.aiWorkflowClarity, 2) ||
-          atLeast(values.aiWorkaroundDependence, 4),
+        containsAny(values.aiAutomationTargets, ["unclear", "unstable", "inconsistent", "not stable", "varies"]) ||
+          hasText(values.workarounds),
         "Automation risk is elevated because current workflows appear unstable, workaround-dependent, or inconsistently understood."
       ),
       triggeredCondition(
@@ -882,12 +753,12 @@
       ),
       triggeredCondition(
         "Trust Climate Risk",
-        atMost(values.aiTrustClimate, 2),
-        "Employees may not feel safe or empowered to challenge AI-generated outputs, which increases the risk of false confidence and poor validation behavior."
+        hasText(values.aiTrustWithoutVerificationRisk),
+        "Employees may over-trust AI-generated outputs in work that still requires judgment, verification, or contextual interpretation."
       ),
       triggeredCondition(
         "AI Decision Architecture Risk",
-        atLeast(values.aiReviewerVariance, 4) || hasText(values.aiDecisionJudgment),
+        hasText(values.aiDecisionJudgment),
         "AI use may be entering decision spaces that depend on experience, interpretation, or reviewer judgment rather than explicit operating rules."
       )
     ].filter(Boolean);
@@ -895,26 +766,17 @@
     return {
       answers: {
         aiCurrentUse: values.aiCurrentUse.trim(),
-        aiApprovedTools: values.aiApprovedTools.trim(),
-        aiShadowUse: values.aiShadowUse,
         aiSensitiveDataExposure: values.aiSensitiveDataExposure,
-        aiWorkflowClarity: values.aiWorkflowClarity,
-        aiClassificationConsistency: values.aiClassificationConsistency,
         aiValidationExpectations: values.aiValidationExpectations,
         aiAccountabilityClarity: values.aiAccountabilityClarity,
         aiGovernanceOwnership: values.aiGovernanceOwnership.trim(),
-        aiEscalationRules: values.aiEscalationRules,
         aiAutomationTargets: values.aiAutomationTargets.trim(),
         aiAmplificationVisibleProblem: values.aiAmplificationVisibleProblem.trim(),
         aiHumanJudgmentStabilizers: values.aiHumanJudgmentStabilizers.trim(),
         aiTrustWithoutVerificationRisk: values.aiTrustWithoutVerificationRisk.trim(),
         aiLeadershipAutomationBeliefs: values.aiLeadershipAutomationBeliefs.trim(),
         aiDecisionJudgment: values.aiDecisionJudgment.trim(),
-        aiReviewerVariance: values.aiReviewerVariance,
-        aiWorkaroundDependence: values.aiWorkaroundDependence,
-        aiRecoverability: values.aiRecoverability,
-        aiTrustClimate: values.aiTrustClimate,
-        aiDependencyQuestion: values.aiDependencyQuestion
+        aiRecoverability: values.aiRecoverability
       },
       score,
       state: state ? state.state : "Incomplete",
@@ -926,19 +788,18 @@
         "Analyze what AI is likely to amplify in the current system: ambiguity, hidden work, governance drift, classification inconsistency, workflow fragmentation, human validation burden, escalation behavior, and trust instability.",
       interpretationLayers: {
         aiGovernance: {
-          focus: "Approved tools, ownership, escalation rules, and accountability.",
+          focus: "Approved and shadow tool usage, governance ownership, approval boundaries, and accountability.",
           signals: {
-            approvedTools: values.aiApprovedTools.trim(),
+            currentUseAndToolApproval: values.aiCurrentUse.trim(),
             governanceOwnership: values.aiGovernanceOwnership.trim(),
-            escalationRules: values.aiEscalationRules,
             accountabilityClarity: values.aiAccountabilityClarity
           }
         },
         operationalAiReadiness: {
-          focus: "Workflow clarity, workaround dependence, recoverability, and validation expectations.",
+          focus: "Automation target stability, core workaround dependence, recoverability, and validation expectations.",
           signals: {
-            workflowClarity: values.aiWorkflowClarity,
-            workaroundDependence: values.aiWorkaroundDependence,
+            automationTargetsAndWorkflowStability: values.aiAutomationTargets.trim(),
+            coreWorkarounds: values.workarounds,
             recoverability: values.aiRecoverability,
             validationExpectations: values.aiValidationExpectations
           }
@@ -953,11 +814,9 @@
           }
         },
         decisionArchitecture: {
-          focus: "Experience-based decisions, reviewer variance, classification consistency, and policy-reality gaps.",
+          focus: "Experience-based decisions, interpretation variance, and policy-reality gaps.",
           signals: {
             decisionJudgment: values.aiDecisionJudgment.trim(),
-            reviewerVariance: values.aiReviewerVariance,
-            classificationConsistency: values.aiClassificationConsistency,
             policyRealityGap:
               "Compare formal AI governance claims against workaround dependence, hidden usage, decision variance, and validation ambiguity."
           }
@@ -966,7 +825,7 @@
       automationGuardrails: [
         "Do not recommend broad AI automation if workflows are unclear.",
         "Do not recommend broad AI automation if workaround dependence is high.",
-        "Do not recommend broad AI automation if reviewer variance is high.",
+        "Do not recommend broad AI automation if key decisions depend on experience, interpretation, or judgment rather than explicit rules.",
         "Do not recommend broad AI automation if accountability is unclear.",
         "Do not recommend broad AI automation if validation expectations are weak.",
         "Do not recommend broad AI automation if sensitive data exposure is high."
@@ -994,7 +853,7 @@
         }
       ],
       diagnosticGptInstructionAddition:
-        "When the submitted assessment includes diagnosticPath = ai_readiness or includes aiReadiness fields, analyze AI readiness through the CLEARPATH lens. Do not treat AI readiness as simple technology maturity. Treat it as operational coherence under accelerating complexity. Evaluate whether AI will amplify workflow instability, hidden work, shadow systems, classification inconsistency, governance ambiguity, escalation inflation, human validation burden, decision accountability gaps, recoverability limits, and trust instability. Do not recommend broad AI automation if workflows are unstable, classification is inconsistent, accountability is unclear, or validation expectations are undefined. Always preserve CLEARPATH sequencing: Stabilize -> Expose -> Diagnose -> Redesign -> Institutionalize. The AI readiness output should sound like CLEARPATH structural diagnostic intelligence, not generic AI consulting advice."
+        "When the submitted assessment includes diagnosticPath = ai_readiness or includes aiReadiness fields, analyze AI readiness through the CLEARPATH lens. Do not treat AI readiness as simple technology maturity. Treat it as operational coherence under accelerating complexity. Evaluate whether AI will amplify workflow instability, hidden work, shadow systems, governance ambiguity, escalation inflation, human validation burden, decision accountability gaps, recoverability limits, and trust instability. Do not recommend broad AI automation if workflows are unstable, key decisions depend on experience or interpretation rather than explicit rules, accountability is unclear, sensitive data exposure is high, or validation expectations are undefined. Always preserve CLEARPATH sequencing: Stabilize -> Expose -> Diagnose -> Redesign -> Institutionalize. The AI readiness output should sound like CLEARPATH structural diagnostic intelligence, not generic AI consulting advice."
     };
   }
 
@@ -1194,6 +1053,18 @@
         h(
           "div",
           { className: "form-panel" },
+          values.diagnosticPath === "ai_readiness"
+            ? h(
+                "div",
+                { className: "activation-banner" },
+                h("strong", null, "AI Readiness activated"),
+                h(
+                  "span",
+                  null,
+                  `+${(steps.find((step) => step.id === "aiReadiness") || { fields: [] }).fields.length} targeted validation & governance questions added.`
+                )
+              )
+            : null,
           h(
             "div",
             { className: "section-head" },
@@ -1263,12 +1134,12 @@
       h(
         "div",
         { className: "hero-copy" },
-        h("p", { className: "label" }, "Operational Reality Assessment"),
+        h("p", { className: "label" }, "Operational Blueprint Intake"),
         h("h1", null, "CLEARPATH"),
         h(
           "p",
           { className: "intro" },
-          "A guided intake for mapping friction, delay, ambiguity, and stress patterns before GPT-assisted analysis."
+          "A structured diagnostic intake that replaces a long discovery call by exposing workflow instability, hidden coordination burden, and policy-reality gaps."
         )
       ),
       h(
@@ -1287,30 +1158,91 @@
   }
 
   function StepRail({ activeStep, goToStep, values, currentSteps }) {
+    const [collapsed, setCollapsed] = useState({
+      core: false,
+      ai: false,
+      finish: false
+    });
+    const groups = [
+      {
+        id: "core",
+        title: "Core Blueprint Intake",
+        steps: currentSteps.filter((step) => !["aiReadiness", "review"].includes(step.id))
+      },
+      {
+        id: "ai",
+        title: "AI Readiness Add-On",
+        steps: currentSteps.filter((step) => step.id === "aiReadiness")
+      },
+      {
+        id: "finish",
+        title: "Finalize",
+        steps: currentSteps.filter((step) => step.id === "review")
+      }
+    ].filter((group) => group.steps.length);
+
+    function groupProgress(group) {
+      const fields = group.steps.flatMap((step) => step.fields);
+      const answered = fields.filter((field) => String(values[field.id] || "").trim()).length;
+      return {
+        answered,
+        total: fields.length,
+        label: fields.length ? `${answered}/${fields.length} complete` : "Ready when you are"
+      };
+    }
+
     return h(
       "aside",
       { className: "step-rail", "aria-label": "Assessment sections" },
-      currentSteps.map((step, index) => {
-        const answered = step.fields.filter((field) => values[field.id].trim()).length;
-        const done = step.fields.length ? answered === step.fields.length : false;
+      groups.map((group) => {
+        const progress = groupProgress(group);
+        const isCollapsed = collapsed[group.id];
+
         return h(
-          "button",
-          {
-            key: step.id,
-            className: `step-button ${index === activeStep ? "active" : ""}`,
-            onClick: () => goToStep(index)
-          },
-          h("span", { className: done ? "dot done" : "dot" }, done ? "✓" : index + 1),
+          "section",
+          { className: "step-group", key: group.id },
           h(
-            "span",
-            { className: "step-copy" },
-            h("strong", null, step.title),
-            h(
-              "small",
-              null,
-              step.fields.length ? `${answered}/${step.fields.length} complete` : "Finalize"
-            )
-          )
+            "button",
+            {
+              className: "step-group-toggle",
+              onClick: () =>
+                setCollapsed((current) => ({
+                  ...current,
+                  [group.id]: !current[group.id]
+                }))
+            },
+            h("span", { className: "caret" }, isCollapsed ? ">" : "v"),
+            h("strong", null, group.title),
+            h("small", null, progress.label)
+          ),
+          isCollapsed
+            ? null
+            : group.steps.map((step) => {
+                const index = currentSteps.findIndex((currentStep) => currentStep.id === step.id);
+                const answered = step.fields.filter((field) =>
+                  String(values[field.id] || "").trim()
+                ).length;
+                const done = step.fields.length ? answered === step.fields.length : false;
+                return h(
+                  "button",
+                  {
+                    key: step.id,
+                    className: `step-button ${index === activeStep ? "active" : ""}`,
+                    onClick: () => goToStep(index)
+                  },
+                  h("span", { className: done ? "dot done" : "dot" }, done ? "✓" : index + 1),
+                  h(
+                    "span",
+                    { className: "step-copy" },
+                    h("strong", null, step.title),
+                    h(
+                      "small",
+                      null,
+                      step.fields.length ? `${answered}/${step.fields.length} complete` : "Finalize"
+                    )
+                  )
+                );
+              })
         );
       })
     );
