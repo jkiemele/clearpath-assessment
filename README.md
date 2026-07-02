@@ -1,6 +1,6 @@
-# CLEARPATH Operational Reality Assessment
+# CLEARPATH Operational Blueprint Intake
 
-A lightweight React intake app for collecting CLEARPATH Operational Reality Assessment responses and exporting them for GPT-assisted analysis.
+A lightweight React intake app for collecting CLEARPATH Operational Blueprint responses and exporting them for GPT-assisted analysis.
 
 ## Run Locally
 
@@ -66,3 +66,7 @@ Each submission includes:
 - the full GPT-ready JSON payload in `fullPayloadJson`
 
 When `diagnosticPath` is `ai_readiness`, the JSON also includes `aiReadiness` with answers, score, readiness state, triggered risk conditions, recommended CLEARPATH stage, and a 30-day readiness plan.
+
+The standard intake is 16 prompts. Selecting `ai_readiness` activates 12 additional targeted validation and governance prompts, for 28 total fields.
+
+After updating Apps Script, redeploy with **Deploy > Manage deployments > Edit > New version > Deploy**. Open the `/exec` web app URL directly and confirm it returns `scriptVersion: "clearpath-blueprint-v8"`.
